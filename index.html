@@ -42,7 +42,19 @@ input, select, button {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(60, 40, 20, 0.5);
 }
-</style>
+#map {
+    width: 500px;
+    height: 250px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease-in-out;
+}
+
+#map.aktywny {
+    opacity: 1;
+    visibility: visible;
+}
+
 </style>
 
 </head>
@@ -163,10 +175,7 @@ async function pokazMape() {
         return;
     }
 
-    // Budujemy pełny adres do geokodowania
     const adres = `${ulica} ${numer}, ${miejscowosc}, ${kod}, Polska`;
-
-    // Zapytanie do Nominatim (OpenStreetMap)
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adres)}`;
 
     try {
@@ -183,27 +192,28 @@ async function pokazMape() {
         const lat = data[0].lat;
         const lon = data[0].lon;
 
-        // Inicjalizacja mapy tylko raz
-        if (!mapa) {
-            mapa = L.map('map').setView([lat, lon], 17);
+        // 🔥 Pokaż mapę z animacją
+        const mapDiv = document.getElementById("map");
+        mapDiv.classList.add("aktywny");
 
-            L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+        if (!mapa) {
+            mapa = L.map('map');
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
             }).addTo(mapa);
-        } else {
-            mapa.setView([lat, lon], 17);
         }
 
-        // Usuwamy poprzedni marker
-        if (marker) {
-            mapa.removeLayer(marker);
-        }
+        mapa.setView([lat, lon], 17);
 
-        // Dodajemy nowy marker
+        if (marker) mapa.removeLayer(marker);
+
         marker = L.marker([lat, lon]).addTo(mapa)
             .bindPopup(adres)
             .openPopup();
+
+        // 🔧 Kluczowe — poprawne przeliczenie rozmiaru po pojawieniu się
+        setTimeout(() => mapa.invalidateSize(), 300);
 
     } catch (e) {
         console.error(e);
