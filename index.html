@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Wyszukiwarka adresów</title>
+    <title>Wyszukiwanie adresu za pomocą kodu</title>
 	<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <style>
@@ -74,13 +74,34 @@ input, select, button {
     opacity: 1;
     visibility: visible;
 }
+.naglowek {
+    display: flex;
+    justify-content: space-between; /* tytuł po lewej, przycisk po prawej */
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.powrot {
+    padding: 6px 12px;
+    border: 1px solid #8b6b4a;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    font-size: 14px;
+}
 
 </style>
 
 </head>
 <body>
 <div class="formularz">
-<h2>Wyszukiwarka adresów</h2>
+<div class="naglowek">
+    <h2>Wyszukiwanie adresu za pomocą kodu</h2>
+
+    <button class="powrot" onclick="window.location.href='https://leszekzyy.github.io/strona_glowna/'">
+        Powróć
+    </button>
+</div>
 
 <label>Kod pocztowy:
     <input type="text" id="kod" placeholder="np. 26-604">
@@ -124,6 +145,7 @@ input, select, button {
     </label>
 <div id="map" style="width: 750px; height: 300px;"></div>
 <br>
+</div>
 <script>
 let daneAPI = []; // tu przechowamy dane pobrane z API
 
@@ -191,7 +213,7 @@ function wypelnijUlice() {
         selectU.appendChild(opt);
     });
 }
-//  MASKA KODU POCZTOWEGO 99-999
+// 🔥 MASKA KODU POCZTOWEGO 99-999
 document.getElementById("kod").addEventListener("input", function () {
     let v = this.value.replace(/\D/g, ""); // usuń wszystko poza cyframi
 
@@ -240,7 +262,7 @@ async function pokazMape() {
 		// pokaż sekcję współrzędnych
 document.getElementById("koordynaty").classList.add("aktywny");
 
-        //  Pokaż mapę z animacją
+        // 🔥 Pokaż mapę z animacją
         const mapDiv = document.getElementById("map");
         mapDiv.classList.add("aktywny");
 
