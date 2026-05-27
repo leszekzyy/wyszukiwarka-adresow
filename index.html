@@ -14,7 +14,7 @@
     font-family: "Calibri", serif;
     color: #2b1b0e;
     margin: 0;
-    height: 100vh;
+    height: 150vh;
     display: flex;
     justify-content: center; /* poziome wyśrodkowanie */
     align-items: center;     /* pionowe wyśrodkowanie */
@@ -43,8 +43,8 @@ input, select, button {
     box-shadow: 0 0 10px rgba(60, 40, 20, 0.5);
 }
 #map {
-    width: 500px;
-    height: 250px;
+    width: 750px;
+    height: 300px;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.6s ease-in-out;
@@ -64,13 +64,23 @@ input, select, button {
     opacity: 1;
     visibility: visible;
 }
+#koordynaty {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease-in-out;
+}
+
+#koordynaty.aktywny {
+    opacity: 1;
+    visibility: visible;
+}
 
 </style>
 
 </head>
 <body>
 <div class="formularz">
-<h2>Wyszukiwarka adresów po kodzie pocztowym</h2>
+<h2>Wyszukiwarka adresów</h2>
 
 <label>Kod pocztowy:
     <input type="text" id="kod" placeholder="np. 26-604">
@@ -98,13 +108,22 @@ input, select, button {
 <label>Numer domu:
     <input type="text" id="numer">
 </label>
-<button onclick="pokazMape()">Pokaż na mapie</button>
+<button onclick="pokazMape()">Pokaż współrzędne i mapę</button>
 
 <br><br>
 </div>
-<div id="map" style="width: 500px; height: 250px;"></div>
 
+<div id="koordynaty" class="ukryte">
+    <br>
+    <label>Szerokość geograficzna:
+        <input type="text" id="lat" readonly>
+    </label>
 
+    <label>Długość geograficzna:
+        <input type="text" id="lon" readonly>
+    </label>
+<div id="map" style="width: 750px; height: 300px;"></div>
+<br>
 <script>
 let daneAPI = []; // tu przechowamy dane pobrane z API
 
@@ -129,7 +148,7 @@ async function pobierzDane() {
             return;
         }
 
-        // 🔥 Pokaż sekcję z polami
+        //  Pokaż sekcję z polami
         document.getElementById("sekcja-adresowa").classList.add("aktywny");
 
         const miejscowosci = [...new Set(data.map(item => item.miejscowosc))];
@@ -172,6 +191,16 @@ function wypelnijUlice() {
         selectU.appendChild(opt);
     });
 }
+//  MASKA KODU POCZTOWEGO 99-999
+document.getElementById("kod").addEventListener("input", function () {
+    let v = this.value.replace(/\D/g, ""); // usuń wszystko poza cyframi
+
+    if (v.length > 2) {
+        v = v.slice(0, 2) + "-" + v.slice(2, 5);
+    }
+
+    this.value = v.slice(0, 6); // maksymalnie 6 znaków
+});
 </script>
 <script>
 let mapa = null;
@@ -205,7 +234,13 @@ async function pokazMape() {
         const lat = data[0].lat;
         const lon = data[0].lon;
 
-        // 🔥 Pokaż mapę z animacją
+        // wpisanie współrzędnych do pól
+        document.getElementById("lat").value = lat;
+        document.getElementById("lon").value = lon;
+		// pokaż sekcję współrzędnych
+document.getElementById("koordynaty").classList.add("aktywny");
+
+        //  Pokaż mapę z animacją
         const mapDiv = document.getElementById("map");
         mapDiv.classList.add("aktywny");
 
